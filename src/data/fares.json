@@ -1,0 +1,20 @@
+{
+  "lastChecked": "2026-11-10",
+  "discount": {
+    "rate": 0.2,
+    "appliesTo": ["student", "senior", "pwd"],
+    "laws": [
+      { "name": "RA 9994 (Expanded Senior Citizens Act of 2010)", "url": "https://lawphil.net/statutes/repacts/ra2010/ra_9994_2010.html" },
+      { "name": "RA 10754 (Expanded PWD Benefits Act, 2016)", "url": "https://lawphil.net/statutes/repacts/ra2016/ra_10754_2016.html" },
+      { "name": "RA 11314 (Student Fare Discount Act, 2019)", "url": "https://lawphil.net/statutes/repacts/ra2019/ra_11314_2019.html" }
+    ],
+    "note": "20% rate per the laws above (law URLs not fetched in the build environment; re-check). Rounding of the discounted amount follows each mode's rule once verified against an LTFRB issuance."
+  },
+  "modes": [
+    { "id": "puj", "name": { "en": "Traditional jeepney (PUJ)", "tl": "Tradisyonal na dyip (PUJ)" }, "status": "unverified" },
+    { "id": "mpuj", "name": { "en": "Modern jeepney (MPUJ)", "tl": "Modernong dyip (MPUJ)" }, "status": "unverified" },
+    { "id": "bus-ordinary", "name": { "en": "City bus (ordinary)", "tl": "City bus (ordinaryo)" }, "status": "unverified" },
+    { "id": "bus-aircon", "name": { "en": "City bus (aircon)", "tl": "City bus (aircon)" }, "status": "unverified" },
+    { "id": "uv", "name": { "en": "UV Express", "tl": "UV Express" }, "status": "unverified" }
+  ]
+}

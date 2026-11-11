@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import data from '../data/fares.json';
+import { classifyDistance, formatDate, MAX_KM, peso } from './format';
 import { computeFare, haversineKm, type Mode, type NewsVerifiedMode } from './fare';
 
 // Cases built from the fares in force since 28 Sep 2026 (news reports of the LTFRB fare guide; see fares.json).
@@ -56,6 +57,37 @@ describe('computeFare', () => {
   it('rejects bad input', () => {
     expect(() => computeFare(get('puj'), -1, RATE)).toThrow();
     expect(() => computeFare(get('puj'), NaN, RATE)).toThrow();
+  });
+});
+
+describe('format helpers', () => {
+  it('formats pesos with thousands separators', () => {
+    expect(peso(14)).toBe('₱14.00');
+    expect(peso(2000006)).toBe('₱2,000,006.00');
+  });
+  it('formats dates as D Mon YYYY', () => {
+    expect(formatDate('2026-09-28')).toBe('28 Sep 2026');
+  });
+  it('treats 0 km, blank and bad input as empty', () => {
+    expect(classifyDistance(0).kind).toBe('empty');
+    expect(classifyDistance(null).kind).toBe('empty');
+    expect(classifyDistance(-3).kind).toBe('empty');
+    expect(classifyDistance(NaN).kind).toBe('empty');
+    expect(classifyDistance(0.1)).toEqual({ kind: 'ok', km: 0.1 });
+  });
+  it('caps the distance at MAX_KM', () => {
+    expect(classifyDistance(MAX_KM).kind).toBe('ok');
+    expect(classifyDistance(MAX_KM + 0.1).kind).toBe('tooFar');
+    expect(classifyDistance(1e6).kind).toBe('tooFar');
+  });
+  it('matches the values rendered in the OG preview (6 km)', () => {
+    const f = (id: string) => computeFare(get(id), 6, RATE);
+    expect([f('puj').regular, f('puj').discounted]).toEqual([18, 14.45]);
+    expect([f('mpuj').regular, f('mpuj').discounted]).toEqual([21.8, 17.34]);
+    expect([f('bus-ordinary').regular, f('bus-ordinary').discounted]).toEqual([17.49, 13.99]);
+  });
+  it('discounted worked example (4 km base + 3.30 km)', () => {
+    expect(computeFare(get('puj'), 7.3, RATE).discounted).toBe(16.53); // 11.25 + 3.30 * 1.60
   });
 });
 

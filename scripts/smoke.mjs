@@ -1,6 +1,6 @@
 // Smoke test: run after `npm run build`. Checks fares.json citations, built HTML tags and the preview MP4.
 import { execFileSync } from 'node:child_process';
-import { readFileSync, statSync, existsSync } from 'node:fs';
+import { readFileSync, statSync, existsSync, readdirSync } from 'node:fs';
 
 const errors = [];
 const fail = (m) => errors.push(m);
@@ -38,6 +38,15 @@ else {
     ['og:image', `${BASE}/og/preview.png`], ['og:title', '.+'], ['og:description', '.+'],
   ];
   for (const [k, v] of want) if (!has(k, v)) fail(`index.html: missing <meta ${k}> = ${v}`);
+}
+
+// 2b. The built JS must reference a maplibre worker asset that actually exists in dist/assets (regression: 404 worker, blank map).
+if (existsSync('dist/assets')) {
+  const assets = readdirSync('dist/assets');
+  const js = assets.filter((f) => /^index-.*\.js$/.test(f)).map((f) => readFileSync(`dist/assets/${f}`, 'utf8')).join('\n');
+  const refs = [...js.matchAll(/maplibre-gl-worker-([\w-]+)\.mjs/g)].map((m) => m[0]).filter((n) => n !== 'maplibre-gl-worker-dev.mjs');
+  if (!refs.length) fail('built JS does not reference a hashed maplibre worker asset (setWorkerUrl missing?)');
+  else if (!refs.some((r) => assets.includes(r))) fail(`worker asset ${refs[0]} is referenced but missing from dist/assets`);
 }
 
 // 3. Assets.

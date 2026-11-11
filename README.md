@@ -24,7 +24,7 @@ Sources:
 - GMA News, [DOTr approves LTFRB fare hike recommendation for PUVs](https://www.gmanetwork.com/news/money/economy/1003715/dotr-approves-ltfrb-fare-hike-recommendation-for-puvs/story/): jeepney rows
 - Philstar, [DOTr lifts suspension of PUV fare hike](https://www.philstar.com/headlines/2026/09/26/2558947/dotr-lifts-suspension-puv-fare-hike) (26 Sep 2026): bus rows
 
-**Rounding is unverified.** The app shows the raw computed fare (to the centavo) and the line "Your ride's posted LTFRB fare matrix governs; actual fares are rounded per the matrix." No rounding rule is applied.
+**Rounding is unverified.** The app shows the raw computed fare (to the centavo), marked as an estimate (≈), with a line under the distance input: "Pay what the fare matrix posted in the vehicle says; it rounds fares, so yours may differ slightly." No rounding rule is applied. 0 km or blank shows no fares; above 200 km (a UX bound, not a legal cap) shows a warning.
 
 ## Updating the fare data
 
@@ -55,11 +55,11 @@ npm install
 npm run dev      # local dev server
 npm run lint     # eslint + tsc + unit tests
 npm run build    # outputs dist/
-npm run smoke    # checks citations, OG/Twitter tags, preview MP4 (<5 MB, H.264)
+npm run smoke    # citations, OG/Twitter tags, preview MP4 (<5 MB, H.264), built maplibre worker asset, and a headless Playwright load that fails on asset 404s, "Worker failed to load" or a blank map canvas
 scripts/check-live.sh https://pamasahe.vercel.app   # verify deployed tags + MP4
 ```
 
-The link-preview video (`public/og/preview.mp4`, 1200×630) is rendered by `scripts/make-og.sh` with ffmpeg.
+The link-preview video (`public/og/preview.mp4`, 1200×630) shows real fares for a 6 km ride and is rendered by `scripts/make-og.sh` with ffmpeg; re-run it whenever `fares.json` changes.
 
 ## Support
 Donate: https://github.com/sponsors/0xjitsu <!-- TODO: placeholder until Berna picks a donation account; set DONATE_URL = '' in src/main.ts to hide -->

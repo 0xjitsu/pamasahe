@@ -2,22 +2,32 @@
 body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: #111827; background: #f3f4f6; }
 header, main, footer { max-width: 720px; margin: 0 auto; padding: 12px 16px; }
 header { position: relative; }
+header p { margin: 4px 0; }
 h1 { margin: 8px 0 0; font-size: 1.5rem; padding-right: 96px; }
-h2 { font-size: 1.05rem; margin: 16px 0 4px; }
 #lang { position: absolute; right: 16px; top: 12px; }
-button { min-height: 44px; padding: 0 14px; border: 1px solid #0b5fff; background: #fff; color: #0b5fff; border-radius: 8px; font: inherit; cursor: pointer; }
-.panel, .card { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+button { min-height: 44px; padding: 0 14px; border: 1px solid #0a4fd6; background: #fff; color: #0a4fd6; border-radius: 8px; font: inherit; cursor: pointer; }
+.panel { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
 input[type=number] { width: 100%; min-height: 48px; font-size: 1.25rem; padding: 0 12px; border: 1px solid #9ca3af; border-radius: 8px; }
 label { display: block; font-weight: 600; margin-bottom: 4px; }
+summary { min-height: 44px; display: flex; align-items: center; font-weight: 600; cursor: pointer; }
 #map { height: 300px; border-radius: 8px; touch-action: pan-x pan-y; }
 #mapOut { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
-.muted { color: #4b5563; font-size: .875rem; }
+.muted { color: #4b5563; font-size: .875rem; margin: 6px 0; }
+.note { color: #111827; font-size: .9rem; margin: 8px 0 0; }
+.warn { color: #92400e; font-weight: 600; margin: 6px 0; }
 .small { font-size: .875rem; }
-.card h3 { margin: 0 0 8px; font-size: 1.05rem; }
-.fares { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.fares span { display: block; font-size: .8rem; color: #4b5563; }
-.fares b { font-size: 1.6rem; }
-.unv { border-left: 4px solid #f59e0b; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.fares { width: 100%; border-collapse: collapse; margin-top: 4px; }
+.fares th, .fares td { padding: 6px 3px; border-bottom: 1px solid #e5e7eb; text-align: right; vertical-align: top; }
+.fares th:first-child { text-align: left; font-weight: 600; }
+.fares thead th { font-size: .8rem; color: #4b5563; font-weight: 600; }
+.fares td b { font-size: .95rem; white-space: nowrap; }
+.fares th:first-child { font-size: .9rem; }
+.how { margin-top: 8px; }
+.mode h3 { margin: 12px 0 0; font-size: 1rem; }
 footer { font-size: .85rem; }
-a { color: #0b5fff; }
+a { color: #0a4fd6; }
+.tap, .maplibregl-ctrl-attrib a { display: inline-block; min-height: 44px; line-height: 44px; padding: 0 4px; }
+.maplibregl-ctrl-group button { width: 44px; height: 44px; }
+.maplibregl-ctrl-attrib-button { width: 44px; height: 44px; }
 .badge { background: #e0ecff; color: #0b3d99; border-radius: .25rem; padding: 0 .35rem; }

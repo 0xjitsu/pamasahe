@@ -1,42 +1,61 @@
 import { describe, expect, it } from 'vitest';
-import { computeFare, haversineKm, type VerifiedMode } from './fare';
+import data from '../data/fares.json';
+import { computeFare, haversineKm, type Mode, type NewsVerifiedMode } from './fare';
 
-// SYNTHETIC TEST FIXTURE ONLY. These numbers are NOT an LTFRB matrix; they exercise the arithmetic.
-// Matrix: base 10.00 for the first 4 km, then 2.00 per extra km, rounded to nearest 0.25.
-const fx: VerifiedMode = {
-  id: 'fixture', name: { en: 'fx', tl: 'fx' }, status: 'verified',
-  baseFare: 10, baseKm: 4, perKm: 2, rounding: 'nearest-0.25',
-  source: { memo: 'TEST', effectiveDate: '2000-01-01', url: 'https://example.com' },
-};
+// Cases built from the fares in force since 28 Sep 2026 (news reports of the LTFRB fare guide; see fares.json).
+const modes = data.modes as Mode[];
+const get = (id: string) => modes.find((m) => m.id === id) as NewsVerifiedMode;
+const RATE = data.discount.rate;
 
 describe('computeFare', () => {
-  it('charges the base fare within the base distance', () => {
-    expect(computeFare(fx, 0, 0.2).regular).toBe(10);
-    expect(computeFare(fx, 4, 0.2).regular).toBe(10);
-    expect(computeFare(fx, 4, 0.2).discounted).toBe(8); // 10 * 0.8
+  it('PUJ traditional', () => {
+    const m = get('puj');
+    expect(computeFare(m, 4, RATE).regular).toBe(14);
+    expect(computeFare(m, 6, RATE).regular).toBe(18); // 14 + 2*2
+    expect(computeFare(m, 6, RATE).discounted).toBe(14.45); // 11.25 + 2*1.60 (published figures)
   });
-  it('adds per-km just over base', () => {
-    expect(computeFare(fx, 5, 0.2).regular).toBe(12); // 10 + 1*2
-    expect(computeFare(fx, 5, 0.2).discounted).toBe(9.5); // 12 * 0.8 = 9.6 -> nearest 0.25 = 9.5
+  it('MPUJ discounted uses the published figures', () => {
+    const r = computeFare(get('mpuj'), 6, RATE);
+    expect(r.discounted).toBe(17.34); // 13.50 + 2*1.92
+    expect(r.regular).toBe(21.8); // 17 + 2*2.40
+    expect(r.discountDerived).toBe(false);
   });
-  it('pro-rates fractional km and rounds', () => {
-    expect(computeFare(fx, 4.3, 0).regular).toBe(10.5); // 10.6 -> 10.5
-    expect(computeFare(fx, 5.3, 0).regular).toBe(12.5); // 12.6 -> 12.5
+  it('city bus ordinary', () => {
+    const r = computeFare(get('bus-ordinary'), 7, RATE);
+    expect(r.regular).toBe(19.98); // 15 + 2*2.49
+    expect(r.discounted).toBe(15.98); // 12 + 2*1.99
   });
-  it('handles long trips', () => {
-    expect(computeFare(fx, 40, 0.2).regular).toBe(82); // 10 + 36*2
-    expect(computeFare(fx, 40, 0.2).discounted).toBe(65.5); // 65.6 -> 65.5
+  it('city bus aircon', () => {
+    const r = computeFare(get('bus-aircon'), 7, RATE);
+    expect(r.regular).toBe(23.96); // 18 + 2*2.98
+    expect(r.discounted).toBe(19.26); // 14.50 + 2*2.38
   });
-  it('applies each rounding rule (raw 10.6)', () => {
-    const r = (rounding: VerifiedMode['rounding']) => computeFare({ ...fx, rounding }, 4.3, 0).regular;
-    expect(r('none')).toBe(10.6);
-    expect(r('nearest-0.5')).toBe(10.5);
-    expect(r('nearest-1')).toBe(11);
-    expect(r('ceil-1')).toBe(11);
+  it('returns the base fare at or under base km', () => {
+    for (const id of ['puj', 'mpuj', 'bus-ordinary', 'bus-aircon']) {
+      const m = get(id);
+      for (const km of [0, 1, m.baseKm]) {
+        const r = computeFare(m, km, RATE);
+        expect(r.regular).toBe(m.regular.base);
+        expect(r.discounted).toBe(m.discounted!.base);
+        expect(r.extraKm).toBe(0);
+      }
+    }
+  });
+  it('UV Express is per km only with the 20% statutory discount', () => {
+    const t = computeFare(get('uv-traditional'), 10, RATE);
+    expect(t.regular).toBe(26);
+    expect(t.discounted).toBe(20.8);
+    expect(t.discountDerived).toBe(true);
+    expect(computeFare(get('uv-modern'), 10, RATE).regular).toBe(30);
+    expect(computeFare(get('uv-modern'), 0, RATE).regular).toBe(0);
+  });
+  it('pro-rates fractional km without an LTFRB rounding rule', () => {
+    expect(computeFare(get('puj'), 4.5, RATE).regular).toBe(15); // 14 + 0.5*2
+    expect(computeFare(get('bus-ordinary'), 5.3, RATE).regular).toBe(15.75); // 15 + 0.3*2.49 = 15.747
   });
   it('rejects bad input', () => {
-    expect(() => computeFare(fx, -1, 0.2)).toThrow();
-    expect(() => computeFare(fx, NaN, 0.2)).toThrow();
+    expect(() => computeFare(get('puj'), -1, RATE)).toThrow();
+    expect(() => computeFare(get('puj'), NaN, RATE)).toThrow();
   });
 });
 

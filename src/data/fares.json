@@ -1,20 +1,192 @@
 {
-  "lastChecked": "2026-11-10",
+  "lastChecked": "2026-11-11",
   "discount": {
     "rate": 0.2,
-    "appliesTo": ["student", "senior", "pwd"],
-    "laws": [
-      { "name": "RA 9994 (Expanded Senior Citizens Act of 2010)", "url": "https://lawphil.net/statutes/repacts/ra2010/ra_9994_2010.html" },
-      { "name": "RA 10754 (Expanded PWD Benefits Act, 2016)", "url": "https://lawphil.net/statutes/repacts/ra2016/ra_10754_2016.html" },
-      { "name": "RA 11314 (Student Fare Discount Act, 2019)", "url": "https://lawphil.net/statutes/repacts/ra2019/ra_11314_2019.html" }
+    "appliesTo": [
+      "student",
+      "senior",
+      "pwd"
     ],
-    "note": "20% rate per the laws above (law URLs not fetched in the build environment; re-check). Rounding of the discounted amount follows each mode's rule once verified against an LTFRB issuance."
+    "laws": [
+      {
+        "name": "RA 9994 (Expanded Senior Citizens Act of 2010)",
+        "url": "https://lawphil.net/statutes/repacts/ra2010/ra_9994_2010.html"
+      },
+      {
+        "name": "RA 10754 (Expanded PWD Benefits Act, 2016)",
+        "url": "https://lawphil.net/statutes/repacts/ra2016/ra_10754_2016.html"
+      },
+      {
+        "name": "RA 11314 (Student Fare Discount Act, 2019)",
+        "url": "https://lawphil.net/statutes/repacts/ra2019/ra_11314_2019.html"
+      }
+    ],
+    "note": "20% rate per the laws above (law URLs not fetched in the build environment; re-check). Used only for UV Express; other modes use the published discounted figures."
   },
   "modes": [
-    { "id": "puj", "name": { "en": "Traditional jeepney (PUJ)", "tl": "Tradisyonal na dyip (PUJ)" }, "status": "unverified" },
-    { "id": "mpuj", "name": { "en": "Modern jeepney (MPUJ)", "tl": "Modernong dyip (MPUJ)" }, "status": "unverified" },
-    { "id": "bus-ordinary", "name": { "en": "City bus (ordinary)", "tl": "City bus (ordinaryo)" }, "status": "unverified" },
-    { "id": "bus-aircon", "name": { "en": "City bus (aircon)", "tl": "City bus (aircon)" }, "status": "unverified" },
-    { "id": "uv", "name": { "en": "UV Express", "tl": "UV Express" }, "status": "unverified" }
+    {
+      "id": "puj",
+      "name": {
+        "en": "Traditional jeepney (PUJ)",
+        "tl": "Tradisyonal na dyip (PUJ)"
+      },
+      "status": "verified-news",
+      "effective": "2026-09-28",
+      "sourceType": "news report of LTFRB fare guide",
+      "officialMatrixVerified": false,
+      "sources": [
+        {
+          "name": "PTV News, LTFRB releases new matrices for PUV fare hikes effective Sept. 28 (28 Sep 2026)",
+          "url": "https://ptvnews.ph/ltfrb-releases-new-matrices-for-puv-fare-hikes-effective-sept-28/"
+        },
+        {
+          "name": "GMA News, DOTr approves LTFRB fare hike recommendation for PUVs",
+          "url": "https://www.gmanetwork.com/news/money/economy/1003715/dotr-approves-ltfrb-fare-hike-recommendation-for-puvs/story/"
+        }
+      ],
+      "baseKm": 4,
+      "regular": {
+        "base": 14.0,
+        "perKm": 2.0
+      },
+      "discounted": {
+        "base": 11.25,
+        "perKm": 1.6
+      }
+    },
+    {
+      "id": "mpuj",
+      "name": {
+        "en": "Modern jeepney (MPUJ)",
+        "tl": "Modernong dyip (MPUJ)"
+      },
+      "status": "verified-news",
+      "effective": "2026-09-28",
+      "sourceType": "news report of LTFRB fare guide",
+      "officialMatrixVerified": false,
+      "sources": [
+        {
+          "name": "PTV News, LTFRB releases new matrices for PUV fare hikes effective Sept. 28 (28 Sep 2026)",
+          "url": "https://ptvnews.ph/ltfrb-releases-new-matrices-for-puv-fare-hikes-effective-sept-28/"
+        },
+        {
+          "name": "GMA News, DOTr approves LTFRB fare hike recommendation for PUVs",
+          "url": "https://www.gmanetwork.com/news/money/economy/1003715/dotr-approves-ltfrb-fare-hike-recommendation-for-puvs/story/"
+        }
+      ],
+      "baseKm": 4,
+      "regular": {
+        "base": 17.0,
+        "perKm": 2.4
+      },
+      "discounted": {
+        "base": 13.5,
+        "perKm": 1.92
+      }
+    },
+    {
+      "id": "bus-ordinary",
+      "name": {
+        "en": "City bus (ordinary)",
+        "tl": "City bus (ordinaryo)"
+      },
+      "status": "verified-news",
+      "effective": "2026-09-28",
+      "sourceType": "news report of LTFRB fare guide",
+      "officialMatrixVerified": false,
+      "sources": [
+        {
+          "name": "PTV News, LTFRB releases new matrices for PUV fare hikes effective Sept. 28 (28 Sep 2026)",
+          "url": "https://ptvnews.ph/ltfrb-releases-new-matrices-for-puv-fare-hikes-effective-sept-28/"
+        },
+        {
+          "name": "Philstar, DOTr lifts suspension of PUV fare hike (26 Sep 2026)",
+          "url": "https://www.philstar.com/headlines/2026/09/26/2558947/dotr-lifts-suspension-puv-fare-hike"
+        }
+      ],
+      "baseKm": 5,
+      "regular": {
+        "base": 15.0,
+        "perKm": 2.49
+      },
+      "discounted": {
+        "base": 12.0,
+        "perKm": 1.99
+      }
+    },
+    {
+      "id": "bus-aircon",
+      "name": {
+        "en": "City bus (aircon)",
+        "tl": "City bus (aircon)"
+      },
+      "status": "verified-news",
+      "effective": "2026-09-28",
+      "sourceType": "news report of LTFRB fare guide",
+      "officialMatrixVerified": false,
+      "sources": [
+        {
+          "name": "PTV News, LTFRB releases new matrices for PUV fare hikes effective Sept. 28 (28 Sep 2026)",
+          "url": "https://ptvnews.ph/ltfrb-releases-new-matrices-for-puv-fare-hikes-effective-sept-28/"
+        },
+        {
+          "name": "Philstar, DOTr lifts suspension of PUV fare hike (26 Sep 2026)",
+          "url": "https://www.philstar.com/headlines/2026/09/26/2558947/dotr-lifts-suspension-puv-fare-hike"
+        }
+      ],
+      "baseKm": 5,
+      "regular": {
+        "base": 18.0,
+        "perKm": 2.98
+      },
+      "discounted": {
+        "base": 14.5,
+        "perKm": 2.38
+      }
+    },
+    {
+      "id": "uv-traditional",
+      "name": {
+        "en": "UV Express (traditional)",
+        "tl": "UV Express (tradisyonal)"
+      },
+      "status": "verified-news",
+      "effective": "2026-09-28",
+      "sourceType": "news report of LTFRB fare guide",
+      "officialMatrixVerified": false,
+      "sources": [
+        {
+          "name": "PTV News, LTFRB releases new matrices for PUV fare hikes effective Sept. 28 (28 Sep 2026)",
+          "url": "https://ptvnews.ph/ltfrb-releases-new-matrices-for-puv-fare-hikes-effective-sept-28/"
+        }
+      ],
+      "baseKm": 0,
+      "regular": {
+        "base": 0,
+        "perKm": 2.6
+      }
+    },
+    {
+      "id": "uv-modern",
+      "name": {
+        "en": "UV Express (modern)",
+        "tl": "UV Express (moderno)"
+      },
+      "status": "verified-news",
+      "effective": "2026-09-28",
+      "sourceType": "news report of LTFRB fare guide",
+      "officialMatrixVerified": false,
+      "sources": [
+        {
+          "name": "PTV News, LTFRB releases new matrices for PUV fare hikes effective Sept. 28 (28 Sep 2026)",
+          "url": "https://ptvnews.ph/ltfrb-releases-new-matrices-for-puv-fare-hikes-effective-sept-28/"
+        }
+      ],
+      "baseKm": 0,
+      "regular": {
+        "base": 0,
+        "perKm": 3.0
+      }
+    }
   ]
 }

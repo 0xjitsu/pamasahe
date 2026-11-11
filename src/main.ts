@@ -34,7 +34,7 @@ app.innerHTML = `
     <div id="mapOut" class="muted"></div>
   </section>
   <section id="results" aria-live="polite"></section>
-  <section class="panel small"><p id="who"></p><p id="disclaimer"></p><p id="checked"></p></section>
+  <section class="panel small"><p id="who"></p><p id="rounding"></p><p id="disclaimer"></p><p id="checked"></p></section>
 </main>
 <footer><p id="foot"></p><p id="attr" class="muted"></p><p id="donate"></p></footer>`;
 
@@ -49,16 +49,20 @@ function renderResults() {
   }
   el.innerHTML = modes.map((m) => {
     const name = esc(m.name[lang]);
-    if (m.status !== 'verified') {
+    if (m.status !== 'verified-news') {
       return `<article class="card unv"><h3>${name}</h3><p>${esc(t('unverified'))}</p></article>`;
     }
     const r = computeFare(m, km!, RATE);
-    const how = `${t('base')} ${peso(m.baseFare)} (${m.baseKm} km) + ${r.extraKm.toFixed(2)} km × ${peso(m.perKm)} = ${peso(m.baseFare + r.extraCost)}`;
+    const how = m.baseKm > 0
+      ? `${t('base')} ${peso(m.regular.base)} (${m.baseKm} km) + ${r.extraKm.toFixed(2)} km × ${peso(m.regular.perKm)} = ${peso(m.regular.base + r.extraCost)}`
+      : `${km!.toFixed(2)} km × ${peso(m.regular.perKm)} = ${peso(m.regular.perKm * km!)}`;
+    const discNote = r.discountDerived ? `<p class="muted">${esc(t('discDerived'))}</p>` : '';
+    const links = m.sources.map((s) => `<a href="${esc(s.url)}" rel="noopener">${esc(s.name.split(',')[0])}</a>`).join(', ');
     return `<article class="card"><h3>${name}</h3>
       <div class="fares"><div><span>${esc(t('regular'))}</span><b>${peso(r.regular)}</b></div>
       <div><span>${esc(t('discounted'))}</span><b>${peso(r.discounted)}</b></div></div>
-      <p class="muted">${esc(t('how'))}: ${esc(how)}</p>
-      <p class="muted">${esc(t('memo'))}: ${esc(m.source.memo)} · ${esc(t('effective'))}: ${esc(m.source.effectiveDate)} · <a href="${esc(m.source.url)}" rel="noopener">${esc(t('source'))}</a></p></article>`;
+      <p class="muted">${esc(t('how'))}: ${esc(how)}</p>${discNote}
+      <p class="muted"><span class="badge">${esc(t('badge'))}</span> ${esc(t('effective'))}: ${esc(m.effective)} · ${esc(t('source'))}: ${links}</p></article>`;
   }).join('');
 }
 
@@ -88,6 +92,7 @@ function renderStatic() {
   $('mapTitle').textContent = t('pickMap');
   $('mapHelp').textContent = t('mapHelp');
   $('who').textContent = t('discountWho');
+  $('rounding').textContent = t('rounding');
   $('disclaimer').textContent = t('disclaimer');
   $('checked').textContent = `${t('lastChecked')}: ${data.lastChecked}`;
   $('foot').innerHTML = `${esc(t('footerLicense'))} ${data.discount.laws.map((l) => `<a href="${esc(l.url)}" rel="noopener">${esc(l.name.split(' (')[0])}</a>`).join(', ')}`;

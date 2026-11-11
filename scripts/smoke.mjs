@@ -8,14 +8,17 @@ const fail = (m) => errors.push(m);
 // 1. Every verified fare needs memo, effective date and source URL; unverified modes must have no numbers.
 const fares = JSON.parse(readFileSync('src/data/fares.json', 'utf8'));
 for (const m of fares.modes) {
-  if (m.status === 'verified') {
-    for (const k of ['baseFare', 'baseKm', 'perKm', 'rounding']) if (m[k] === undefined) fail(`${m.id}: missing ${k}`);
-    const s = m.source ?? {};
-    if (!s.memo) fail(`${m.id}: missing source.memo`);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(s.effectiveDate ?? '')) fail(`${m.id}: missing/invalid source.effectiveDate`);
-    if (!/^https:\/\//.test(s.url ?? '')) fail(`${m.id}: missing/invalid source.url`);
-  } else if (m.status !== 'unverified') fail(`${m.id}: status must be verified|unverified`);
-  else if (m.baseFare !== undefined || m.perKm !== undefined) fail(`${m.id}: unverified mode must not carry fare numbers`);
+  if (m.status === 'verified-news') {
+    const tariffs = [m.regular, ...(m.discounted ? [m.discounted] : [])];
+    if (m.baseKm === undefined) fail(`${m.id}: missing baseKm`);
+    for (const t of tariffs) if (typeof t.base !== 'number' || typeof t.perKm !== 'number') fail(`${m.id}: bad tariff`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(m.effective ?? '')) fail(`${m.id}: missing/invalid effective`);
+    if (!m.sourceType) fail(`${m.id}: missing sourceType`);
+    if (typeof m.officialMatrixVerified !== 'boolean') fail(`${m.id}: missing officialMatrixVerified`);
+    if (!m.sources?.length) fail(`${m.id}: no sources`);
+    for (const s of m.sources ?? []) if (!/^https:\/\//.test(s.url ?? '')) fail(`${m.id}: invalid source url`);
+  } else if (m.status !== 'unverified') fail(`${m.id}: status must be verified-news|unverified`);
+  else if (m.regular !== undefined) fail(`${m.id}: unverified mode must not carry fare numbers`);
 }
 if (!fares.lastChecked) fail('fares.json: missing lastChecked');
 

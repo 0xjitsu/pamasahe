@@ -4,32 +4,35 @@
 
 Live: https://pamasahe.vercel.app
 
-## ⚠️ Fare data status (read this first)
+## Fare data status
 
-**v1 ships with every mode marked `unverified` and no fare numbers.** The build environment that produced v1 could not reach ltfrb.gov.ph (HTTP 403), pia.gov.ph (403) or any search engine, so no current LTFRB matrix could be verified from a source. Per the project rule "never guess a number", nothing was entered. The calculator, tests, map and UI are complete; the page shows an "unverified" notice per mode until `src/data/fares.json` is filled in with cited data (below).
+Fares are those in force since **28 Sep 2026** (DOTr memo of 25 Sep 2026 lifting the suspension; LTFRB fare guides released 28 Sep 2026). Last checked **2026-11-11**; no rollback found.
 
-## Fare sources and how to update the matrix
+**Verification level: `verified-news`.** The figures come from news reports of the LTFRB fare guide, not the official PDF matrix (ltfrb.gov.ph returned 403 to the build environment), so `officialMatrixVerified` is `false`. The UI badge says so ("based on news reports of the 28 Sep 2026 LTFRB fare guide").
 
-`src/data/fares.json` is the single source of truth. To make a mode live, replace its entry with:
+| Mode | Regular | Student/Senior/PWD |
+|---|---|---|
+| PUJ traditional | P14.00 first 4 km, +P2.00/km | P11.25 first 4 km, +P1.60/km |
+| MPUJ modern | P17.00 first 4 km, +P2.40/km | P13.50 first 4 km, +P1.92/km |
+| City bus ordinary | P15.00 first 5 km, +P2.49/km | P12.00 first 5 km, +P1.99/km |
+| City bus aircon | P18.00 first 5 km, +P2.98/km | P14.50 first 5 km, +P2.38/km |
+| UV Express traditional | P2.60/km | 20% discount (RA 9994/10754/11314) |
+| UV Express modern | P3.00/km | 20% discount |
 
-```json
-{
-  "id": "puj",
-  "name": { "en": "Traditional jeepney (PUJ)", "tl": "Tradisyonal na dyip (PUJ)" },
-  "status": "verified",
-  "baseFare": 0,
-  "baseKm": 0,
-  "perKm": 0,
-  "rounding": "nearest-0.25",
-  "source": { "memo": "<memorandum circular / board resolution no.>", "effectiveDate": "YYYY-MM-DD", "url": "https://..." }
-}
-```
+Sources:
+- PTV News, [LTFRB releases new matrices for PUV fare hikes effective Sept. 28](https://ptvnews.ph/ltfrb-releases-new-matrices-for-puv-fare-hikes-effective-sept-28/) (28 Sep 2026): all rows
+- GMA News, [DOTr approves LTFRB fare hike recommendation for PUVs](https://www.gmanetwork.com/news/money/economy/1003715/dotr-approves-ltfrb-fare-hike-recommendation-for-puvs/story/): jeepney rows
+- Philstar, [DOTr lifts suspension of PUV fare hike](https://www.philstar.com/headlines/2026/09/26/2558947/dotr-lifts-suspension-puv-fare-hike) (26 Sep 2026): bus rows
 
-`rounding` is one of `none`, `nearest-0.25`, `nearest-0.5`, `nearest-1`, `ceil-1`; copy it from the issuance. Use only official sources (LTFRB issuances, ltfrb.gov.ph, official LTFRB/DOTr pages, or PNA/PIA reports quoting them). Then update `lastChecked`, run `bash scripts/make-og.sh` to re-render the preview video if desired, and `npm run lint && npm run build && npm run smoke`. Smoke fails if a verified mode lacks a memo number, effective date or https source URL, or if an unverified mode carries fare numbers. When LTFRB changes or rolls back a fare, edit the entry and `effectiveDate`/`memo`; old values live in git history.
+**Rounding is unverified.** The app shows the raw computed fare (to the centavo) and the line "Your ride's posted LTFRB fare matrix governs; actual fares are rounded per the matrix." No rounding rule is applied.
 
-**Discount:** 20% for students (RA 11314), senior citizens (RA 9994) and PWDs (RA 10754), applied to the computed fare and rounded with the mode's rule. The rate comes from the statutes (links in `fares.json`); the rounding of discounted fares has not been checked against an LTFRB issuance.
+## Updating the fare data
 
-Formula: `fare = baseFare` for the first `baseKm`, plus `(km − baseKm) × perKm` after that (fractions pro-rated), then rounded. Unit tests (`src/lib/fare.test.ts`) use a clearly-labelled **synthetic fixture**, not real LTFRB values; add real-matrix cases beside the citation once data is in.
+`src/data/fares.json` is the single source of truth. Each mode has `status` (`verified-news` or `unverified`), `effective`, `sourceType`, `officialMatrixVerified`, `sources[]` (name + https url), `baseKm`, `regular {base, perKm}` and, where published, `discounted {base, perKm}`. Where no discounted figure is published (UV Express) the 20% statutory discount is applied to the regular fare. Update `lastChecked`, then run `npm run lint && npm run build && npm run smoke`; smoke fails if a mode lacks effective date, source type or https sources, or if an `unverified` mode carries fare numbers. When the official LTFRB matrix is checked, set `officialMatrixVerified` to `true` and cite the memo. Old values live in git history.
+
+**Discount:** 20% for students (RA 11314), senior citizens (RA 9994) and PWDs (RA 10754). Published discounted figures are used as-is for PUJ, MPUJ and city bus; the 20% is computed only for UV Express (law links in `fares.json`, not fetched in the build environment).
+
+Formula: `fare = base` for the first `baseKm`, plus `(km − baseKm) × perKm` after that (fractions pro-rated), no rounding rule applied. Unit tests (`src/lib/fare.test.ts`) are built from the table above.
 
 ## Map and distance
 

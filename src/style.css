@@ -20,3 +20,4 @@ label { display: block; font-weight: 600; margin-bottom: 4px; }
 .unv { border-left: 4px solid #f59e0b; }
 footer { font-size: .85rem; }
 a { color: #0b5fff; }
+.badge { background: #e0ecff; color: #0b3d99; border-radius: .25rem; padding: 0 .35rem; }

@@ -1,0 +1,7 @@
+{
+  "outputDirectory": "dist",
+  "buildCommand": "npm run build",
+  "headers": [
+    { "source": "/og/(.*)", "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }] }
+  ]
+}
